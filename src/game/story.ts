@@ -6,13 +6,13 @@ export type StoryNode = {
   soundEffect?: 'explosion' | 'heartbeat' | 'error';
 };
 
-export const getStoryNodes = (charName: string, charGender: 'male' | 'female'): Record<string, StoryNode> => {
+export const getStoryNodes = (charName: string, charGender: 'male' | 'female', language: 'English' | 'Telugu' | 'Hindi' | 'Tamil' = 'English'): Record<string, StoryNode> => {
   const heShe = charGender === 'male' ? 'he' : 'she';
   const himHer = charGender === 'male' ? 'him' : 'her';
   const hisHer = charGender === 'male' ? 'his' : 'her';
   const boyGirl = charGender === 'male' ? 'guy' : 'girl';
 
-  return {
+  const nodes: Record<string, StoryNode> = {
     start: {
       messages: [
         { sender: 'system', text: 'CONNECTION ESTABLISHED. UNKNOWN SIGNAL DETECTED.', delay: 1000, image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=800' },
@@ -624,4 +624,94 @@ export const getStoryNodes = (charName: string, charGender: 'male' | 'female'): 
       music: 'none'
     }
   };
+
+  if (language === 'English') return nodes;
+
+  const dict: Record<string, Record<string, string>> = {
+    'Telugu': {
+      'Hello? Is someone there?': 'Hello? Akkada evaraina unnara?',
+      'My phone has been acting crazy all day. Who is this?': 'Naa phone rojantha crazy ga undi. Evaru meeru?',
+      'Who are you?': 'Meeru evaru?',
+      'Where are you?': 'Meeru ekkada unnaru?',
+      'How is this phone connected?': 'Ee phone ela connect ayindi?',
+      [`My name is ${charName}. I live in Cedar Valley.`]: `Naa peru ${charName}. Nenu Cedar Valley lo untanu.`,
+      'I think my phone connected to a random number.': 'Naa phone oka random number ki connect ayindi anukunta.',
+      'Cedar Valley? Never heard of it.': 'Cedar Valley aa? Nenu eppudu vinaledu.',
+      'I am in Cedar Valley. It\'s a small industrial town.': 'Nenu Cedar Valley lo unnanu. Idi oka chinna industrial town.',
+      'I have no idea. I was near the old radio tower and it just beeped.': 'Naaku theliyadu. Nenu patha radio tower daggara unnanu, adi beep ayindi.',
+      'That is very strange.': 'Idi chala vintha ga undi.',
+      'Anyway, it\'s getting late. March 18 is almost over.': 'Emaina, late avuthundi. March 18 aipothundi.',
+      '2016 has been a weird year so far.': '2016 ippativaraku chala weird ga undi.',
+      'Wait... 2016? It is 2026 right now.': 'Aagu... 2016 aa? Ippudu 2026.',
+      'Is this some kind of prank?': 'Idi emaina prank aa?',
+      '2026? Very funny. You expect me to believe you are from the future?': '2026 aa? Chala bagundi. Nuvvu future nunchi vachavani nenu nammala?',
+      'Prove it.': 'Prove chey.',
+      'Check today\'s newspaper.': 'Eroju newspaper chudu.',
+      'Describe the town square.': 'Town square gurinchi cheppu.',
+      'Take a photo of the clock tower.': 'Clock tower photo theeyi.',
+    },
+    'Hindi': {
+      'Hello? Is someone there?': 'Hello? Wahan koi hai?',
+      'My phone has been acting crazy all day. Who is this?': 'Mera phone aaj ajeeb behave kar raha hai. Kaun hai wahan?',
+      'Who are you?': 'Tum kaun ho?',
+      'Where are you?': 'Tum kahan ho?',
+      'How is this phone connected?': 'Ye phone kaise connect hua?',
+      [`My name is ${charName}. I live in Cedar Valley.`]: `Mera naam ${charName} hai. Main Cedar Valley mein rehta hoon.`,
+      'I think my phone connected to a random number.': 'Mujhe lagta hai mera phone kisi random number se connect ho gaya hai.',
+      'Cedar Valley? Never heard of it.': 'Cedar Valley? Maine kabhi nahi suna.',
+      'I am in Cedar Valley. It\'s a small industrial town.': 'Main Cedar Valley mein hoon. Ye ek chhota industrial town hai.',
+      'I have no idea. I was near the old radio tower and it just beeped.': 'Mujhe nahi pata. Main purane radio tower ke paas tha aur ye beep hua.',
+      'That is very strange.': 'Ye bahut ajeeb hai.',
+      'Anyway, it\'s getting late. March 18 is almost over.': 'Khair, der ho rahi hai. March 18 khatam hone wala hai.',
+      '2016 has been a weird year so far.': '2016 ab tak bahut ajeeb saal raha hai.',
+      'Wait... 2016? It is 2026 right now.': 'Ruko... 2016? Abhi toh 2026 hai.',
+      'Is this some kind of prank?': 'Kya ye koi mazak hai?',
+      '2026? Very funny. You expect me to believe you are from the future?': '2026? Bahut mazakiya. Tum chahte ho main manun ki tum future se ho?',
+      'Prove it.': 'Saabit karo.',
+      'Check today\'s newspaper.': 'Aaj ka newspaper dekho.',
+      'Describe the town square.': 'Town square kaisa dikhta hai?',
+      'Take a photo of the clock tower.': 'Clock tower ki photo lo.',
+    },
+    'Tamil': {
+      'Hello? Is someone there?': 'Hello? Anga yaraachum irukeengala?',
+      'My phone has been acting crazy all day. Who is this?': 'En phone innaiku fulla crazy ah irukku. Yaaru idhu?',
+      'Who are you?': 'Neenga yaaru?',
+      'Where are you?': 'Neenga enga irukeenga?',
+      'How is this phone connected?': 'Indha phone epdi connect aachu?',
+      [`My name is ${charName}. I live in Cedar Valley.`]: `En peru ${charName}. Naan Cedar Valley la irukken.`,
+      'I think my phone connected to a random number.': 'En phone oru random number kooda connect aayiduchu nu nenaikiren.',
+      'Cedar Valley? Never heard of it.': 'Cedar Valley ah? Naan kelvi pattadhe illa.',
+      'I am in Cedar Valley. It\'s a small industrial town.': 'Naan Cedar Valley la irukken. Idhu oru chinna industrial town.',
+      'I have no idea. I was near the old radio tower and it just beeped.': 'Enaku theriyala. Naan pazhaya radio tower pakathula irundhen, adhu beep aachu.',
+      'That is very strange.': 'Idhu romba vithyasama irukku.',
+      'Anyway, it\'s getting late. March 18 is almost over.': 'Paravalla, late aagudhu. March 18 mudiyapogudhu.',
+      '2016 has been a weird year so far.': '2016 idhuvaraikum romba weird ah irukku.',
+      'Wait... 2016? It is 2026 right now.': 'Nillunga... 2016 ah? Ippo 2026.',
+      'Is this some kind of prank?': 'Idhu edhavadhu prank ah?',
+      '2026? Very funny. You expect me to believe you are from the future?': '2026 ah? Romba nalla irukku. Neenga future la irundhu vandheenga nu naan nambanuma?',
+      'Prove it.': 'Prove pannunga.',
+      'Check today\'s newspaper.': 'Innaiku newspaper ah paarunga.',
+      'Describe the town square.': 'Town square epdi irukku nu sollunga.',
+      'Take a photo of the clock tower.': 'Clock tower ah photo edunga.',
+    }
+  };
+
+  const translate = (text: string) => dict[language]?.[text] || text;
+
+  const translatedNodes: Record<string, StoryNode> = {};
+  for (const [key, node] of Object.entries(nodes)) {
+    translatedNodes[key] = {
+      ...node,
+      messages: node.messages.map(m => ({
+        ...m,
+        text: translate(m.text)
+      })),
+      choices: node.choices?.map(c => ({
+        ...c,
+        text: translate(c.text)
+      }))
+    };
+  }
+
+  return translatedNodes;
 };

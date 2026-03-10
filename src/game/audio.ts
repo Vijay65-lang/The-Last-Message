@@ -173,3 +173,50 @@ export const stopSuspenseMusic = () => {
     console.error("Stop suspense failed", e);
   }
 };
+
+let bgmOsc: OscillatorNode | null = null;
+let bgmGain: GainNode | null = null;
+
+export const startBGM = () => {
+  try {
+    if (bgmOsc) return;
+    const ctx = getAudioContext();
+    
+    bgmOsc = ctx.createOscillator();
+    bgmGain = ctx.createGain();
+    
+    bgmOsc.type = 'sine';
+    bgmOsc.frequency.setValueAtTime(110, ctx.currentTime); // Low A
+    
+    // Add some slow modulation
+    const bgmLfo = ctx.createOscillator();
+    bgmLfo.type = 'sine';
+    bgmLfo.frequency.value = 0.1;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 10;
+    bgmLfo.connect(lfoGain);
+    lfoGain.connect(bgmOsc.frequency);
+    bgmLfo.start();
+
+    bgmGain.gain.setValueAtTime(0, ctx.currentTime);
+    bgmGain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 2);
+    
+    bgmOsc.connect(bgmGain);
+    bgmGain.connect(ctx.destination);
+    
+    bgmOsc.start();
+  } catch (e) {
+    console.error("BGM failed", e);
+  }
+};
+
+export const stopBGM = () => {
+  if (bgmGain && bgmOsc && audioCtx) {
+    bgmGain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 2);
+    bgmOsc.stop(audioCtx.currentTime + 2);
+    setTimeout(() => {
+      bgmOsc = null;
+      bgmGain = null;
+    }, 2100);
+  }
+};

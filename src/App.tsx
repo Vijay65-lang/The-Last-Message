@@ -7,13 +7,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useStoryEngine } from './game/engine';
 import { MessageBubble } from './components/MessageBubble';
 import { TypingIndicator } from './components/TypingIndicator';
-import { Phone, MoreVertical, Signal, Battery, Wifi, User, UserRound, Save, Timer, RotateCcw, Gauge } from 'lucide-react';
+import { Phone, MoreVertical, Signal, Battery, Wifi, User, UserRound, Save, Timer, RotateCcw, Gauge, Languages } from 'lucide-react';
 
 export default function App() {
   const { messages, choices, isTyping, makeChoice, startGame, resetGame, hasStarted, gameState, isSaving, timeRemaining, timeTotal, isGameOver, manualSave } = useStoryEngine();
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [selectedGender, setSelectedGender] = useState<'male' | 'female' | null>(null);
   const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard'>('normal');
+  const [language, setLanguage] = useState<'English' | 'Telugu' | 'Hindi' | 'Tamil'>('English');
   const [showConfirmReset, setShowConfirmReset] = useState(false);
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function App() {
             <Phone className="w-10 h-10 text-emerald-500 animate-pulse" />
           </div>
           <h1 className="text-3xl font-bold mb-2 tracking-tight">The Last Message</h1>
-          <p className="text-zinc-400 mb-8 leading-relaxed">
+          <p className="text-zinc-400 mb-6 leading-relaxed">
             You found an old, cracked phone in the forest. It has no SIM card, but suddenly, a message appears.
           </p>
           
@@ -54,6 +55,22 @@ export default function App() {
                 <UserRound className="w-6 h-6" />
                 <span>Female</span>
               </button>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <p className="text-sm text-zinc-500 mb-3 uppercase tracking-wider font-semibold">Language (Transliterated)</p>
+            <div className="grid grid-cols-2 gap-2 justify-center">
+              {(['English', 'Telugu', 'Hindi', 'Tamil'] as const).map(lang => (
+                <button 
+                  key={lang}
+                  onClick={() => setLanguage(lang)}
+                  className={`py-2 px-2 rounded-lg border transition-all flex flex-col items-center gap-1 text-xs ${language === lang ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : 'border-zinc-700 hover:border-zinc-500 text-zinc-400'}`}
+                >
+                  <Languages className="w-4 h-4 mb-1" />
+                  <span>{lang}</span>
+                </button>
+              ))}
             </div>
           </div>
 
@@ -79,14 +96,10 @@ export default function App() {
                 <span>Hard</span>
               </button>
             </div>
-            <p className="text-xs text-zinc-500 mt-2 flex items-center justify-center gap-1">
-              <Gauge className="w-3 h-3" />
-              Affects timed choices duration
-            </p>
           </div>
 
           <button 
-            onClick={() => selectedGender && startGame(selectedGender, difficulty)}
+            onClick={() => selectedGender && startGame(selectedGender, difficulty, language)}
             disabled={!selectedGender}
             className={`w-full font-semibold py-4 rounded-xl transition-all shadow-lg ${selectedGender ? 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95 shadow-emerald-900/20' : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'}`}
           >

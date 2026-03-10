@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getStoryNodes } from './story';
-import { playNotification, startSuspenseMusic, stopSuspenseMusic, playExplosion, playHeartbeat, playError } from './audio';
+import { playNotification, startSuspenseMusic, stopSuspenseMusic, playExplosion, playHeartbeat, playError, startBGM, stopBGM } from './audio';
 
 export type Message = {
   id: string;
@@ -16,6 +16,7 @@ export type GameState = {
   charName: string;
   charGender: 'male' | 'female';
   difficulty: 'easy' | 'normal' | 'hard';
+  language: 'English' | 'Telugu' | 'Hindi' | 'Tamil';
 };
 
 export function useStoryEngine() {
@@ -33,7 +34,8 @@ export function useStoryEngine() {
     playerGender: null,
     charName: 'Maya',
     charGender: 'female',
-    difficulty: 'normal'
+    difficulty: 'normal',
+    language: 'English'
   });
 
   // We use a ref to track if a node is currently playing to prevent overlaps
@@ -53,7 +55,7 @@ export function useStoryEngine() {
           setGameState(parsed.gameState);
         }
         
-        const nodes = getStoryNodes(parsed.gameState?.charName || 'Maya', parsed.gameState?.charGender || 'female');
+        const nodes = getStoryNodes(parsed.gameState?.charName || 'Maya', parsed.gameState?.charGender || 'female', parsed.gameState?.language || 'English');
         const node = nodes[parsed.currentNodeId];
         if (node) {
           setChoices(node.choices || []);
@@ -61,6 +63,7 @@ export function useStoryEngine() {
             setIsGameOver(true);
           }
           if (node.music === 'suspense') startSuspenseMusic();
+          else startBGM();
           // We don't restore timers on load to avoid unfair deaths
         }
       } catch (e) {
@@ -83,7 +86,7 @@ export function useStoryEngine() {
     setChoices([]);
     setIsGameOver(false);
     
-    const nodes = getStoryNodes(currentState.charName, currentState.charGender);
+    const nodes = getStoryNodes(currentState.charName, currentState.charGender, currentState.language);
     const node = nodes[nodeId];
     
     if (!node) {
@@ -92,8 +95,16 @@ export function useStoryEngine() {
       return;
     }
 
-    if (node.music === 'suspense') startSuspenseMusic();
-    if (node.music === 'none') stopSuspenseMusic();
+    if (node.music === 'suspense') {
+      stopBGM();
+      startSuspenseMusic();
+    } else if (node.music === 'none') {
+      stopSuspenseMusic();
+      stopBGM();
+    } else {
+      stopSuspenseMusic();
+      startBGM();
+    }
     
     if (node.soundEffect) {
       if (node.soundEffect === 'explosion') playExplosion();
@@ -177,12 +188,13 @@ export function useStoryEngine() {
     isPlayingRef.current = false;
   }, []);
 
-  const startGame = useCallback((playerGender: 'male' | 'female', difficulty: 'easy' | 'normal' | 'hard' = 'normal') => {
+  const startGame = useCallback((playerGender: 'male' | 'female', difficulty: 'easy' | 'normal' | 'hard' = 'normal', language: 'English' | 'Telugu' | 'Hindi' | 'Tamil' = 'English') => {
     const newState: GameState = {
       playerGender,
       charName: playerGender === 'male' ? 'Maya' : 'Mark',
       charGender: playerGender === 'male' ? 'female' : 'male',
-      difficulty
+      difficulty,
+      language
     };
     setGameState(newState);
     setHasStarted(true);
@@ -191,6 +203,7 @@ export function useStoryEngine() {
     setIsGameOver(false);
     // Initialize audio context on first user interaction
     playNotification(); 
+    startBGM();
     playNode('start', newState);
   }, [playNode]);
 
@@ -235,6 +248,7 @@ export function useStoryEngine() {
   const resetGame = useCallback(() => {
     localStorage.removeItem('lastMessageSave');
     stopSuspenseMusic();
+    stopBGM();
     if (currentTimeoutRef.current) clearTimeout(currentTimeoutRef.current);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     isPlayingRef.current = false;
@@ -250,7 +264,8 @@ export function useStoryEngine() {
       playerGender: null,
       charName: 'Maya',
       charGender: 'female',
-      difficulty: 'normal'
+      difficulty: 'normal',
+      language: 'English'
     });
   }, []);
 
